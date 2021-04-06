@@ -1,4 +1,5 @@
 /*  eslint linebreak-style: ["error", "windows"]  */
+/*  eslint no-unneeded-ternary: "error" */
 
 const { nanoid } = require('nanoid');
 const books = require('./books');
@@ -15,19 +16,19 @@ const addBookHandler = (request, h) => {
     reading,
   } = request.payload;
 
-  if (name === undefined) {
-    const response = h.response({
-      status: 'fail',
-      message: 'Gagal menambahkan buku. Mohon isi nama buku',
-    });
-    response.code(400);
-    return response;
-  }
   if (readPage > pageCount) {
     const response = h.response({
       status: 'fail',
       message:
         'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+    });
+    response.code(400);
+    return response;
+  }
+  if (name === undefined) {
+    const response = h.response({
+      status: 'fail',
+      message: 'Gagal menambahkan buku. Mohon isi nama buku',
     });
     response.code(400);
     return response;
@@ -65,7 +66,7 @@ const addBookHandler = (request, h) => {
         bookId: id,
       },
     });
-    response.code(200);
+    response.code(201);
     return response;
   }
   const response = h.response({
@@ -82,20 +83,38 @@ const getAllBooksHandler = (request, h) => {
   let booksGet = books;
 
   if (name !== undefined) {
-    booksGet = booksGet.filter((book) => book.name === name);
+    booksGet = booksGet.filter((book) => book.name.toLowerCase().includes(name.toLowerCase()));
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: booksGet,
+      },
+      query: request.query,
+    });
+    response.code(200);
+    return response;
   }
   if (reading !== undefined) {
-    booksGet = booksGet.filter((book) => book.reading === reading);
+    let boolReading = true;
+    if (reading === '0') {
+      boolReading = false;
+    }
+    booksGet = booksGet.filter((book) => book.reading === boolReading);
   }
   if (finished !== undefined) {
-    booksGet = booksGet.filter((book) => book.finished === finished);
+    let boolFinished = true;
+    if (finished === '0') {
+      boolFinished = false;
+    }
+    booksGet = booksGet.filter((book) => book.finished === boolFinished);
   }
 
   const response = h.response({
     status: 'success',
     data: {
-      booksGet,
+      books: booksGet,
     },
+    query: request.query,
   });
   response.code(200);
   return response;
@@ -139,20 +158,20 @@ const editBookByIdHandler = (request, h) => {
     reading,
   } = request.payload;
 
-  if (name === undefined) {
+  if (readPage > pageCount) {
     const response = h.response({
       status: 'fail',
-      message: 'Gagal menambahkan buku. Mohon isi nama buku',
+      message:
+        'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
     });
     response.code(400);
     return response;
   }
 
-  if (readPage > pageCount) {
+  if (name === undefined) {
     const response = h.response({
       status: 'fail',
-      message:
-        'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      message: 'Gagal memperbarui buku. Mohon isi nama buku',
     });
     response.code(400);
     return response;
@@ -188,7 +207,7 @@ const editBookByIdHandler = (request, h) => {
 
   const response = h.response({
     status: 'fail',
-    message: 'Gagal memperbarui buku. Id tidak ditemukan',
+    message: 'Gagal memperbarui catatan. Id tidak ditemukan',
   });
   response.code(404);
   return response;
