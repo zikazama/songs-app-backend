@@ -1,10 +1,12 @@
+/*  eslint linebreak-style: ["error", "windows"]  */
+
 const {
   addBookHandler,
   getAllBooksHandler,
   getBookByIdHandler,
   editBookByIdHandler,
   deleteBookByIdHandler,
-} = require("./handler");
+} = require('./handler');
 
 const routes = [
   {
