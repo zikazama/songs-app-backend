@@ -3,6 +3,8 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable linebreak-style */
+const ClientError = require('../../exceptions/ClientError');
+
 class SongsHandler {
   constructor(service, validator) {
     this._service = service;
@@ -15,7 +17,7 @@ class SongsHandler {
     this.deleteNoteByIdHandler = this.deleteNoteByIdHandler.bind(this);
   }
 
-  postSongHandler() {
+  postSongHandler(request, h) {
     try {
       this._validator.validateNSongPayload(request.payload);
       const {
@@ -74,7 +76,7 @@ class SongsHandler {
     };
   }
 
-  getSongByIdHandler() {
+  getSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
       const song = this._service.getSongById(id);
@@ -105,7 +107,7 @@ class SongsHandler {
     }
   }
 
-  putSongByIdHandler() {
+  putSongByIdHandler(request, h) {
     try {
       this._validator.validateNotePayload(request.payload);
       const { id } = request.params;
@@ -136,7 +138,7 @@ class SongsHandler {
     }
   }
 
-  deleteSongByIdHandler() {
+  deleteSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
       this._service.deleteSongById(id);

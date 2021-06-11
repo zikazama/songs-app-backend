@@ -1,3 +1,7 @@
+/* eslint-disable no-sequences */
+/* eslint-disable semi */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-expressions */
 /*  eslint linebreak-style: ["error", "windows"]  */
 /*  eslint no-unneeded-ternary: "error" */
 
@@ -34,7 +38,6 @@ const addSongHandler = (request, h) => {
   const id = nanoid(16);
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
-  const finished = pageCount === readPage;
 
   const newSong = {
     title,
