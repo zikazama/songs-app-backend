@@ -10,16 +10,16 @@ class SongsHandler {
     this._service = service;
     this._validator = validator;
 
-    this.postNoteHandler = this.postNoteHandler.bind(this);
-    this.getNotesHandler = this.getNotesHandler.bind(this);
-    this.getNoteByIdHandler = this.getNoteByIdHandler.bind(this);
-    this.putNoteByIdHandler = this.putNoteByIdHandler.bind(this);
-    this.deleteNoteByIdHandler = this.deleteNoteByIdHandler.bind(this);
+    this.postSongHandler = this.postSongHandler.bind(this);
+    this.getSongsHandler = this.getSongsHandler.bind(this);
+    this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
+    this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
+    this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
   }
 
-  postSongHandler(request, h) {
+  async postSongHandler(request, h) {
     try {
-      this._validator.validateNSongPayload(request.payload);
+      this._validator.validateSongPayload(request.payload);
       const {
         title = 'untitled',
         year,
@@ -28,7 +28,7 @@ class SongsHandler {
         duration,
       } = request.payload;
 
-      const songId = this._service.addSong({
+      const songId = await this._service.addSong({
         title,
         year,
         performer,
@@ -66,8 +66,8 @@ class SongsHandler {
     }
   }
 
-  getSongsHandler() {
-    const songs = this._service.getSongs();
+  async getSongsHandler() {
+    const songs = await this._service.getSongs();
     return {
       status: 'success',
       data: {
@@ -76,10 +76,10 @@ class SongsHandler {
     };
   }
 
-  getSongByIdHandler(request, h) {
+  async getSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      const song = this._service.getSongById(id);
+      const song = await this._service.getSongById(id);
       return {
         status: 'success',
         data: {
@@ -107,11 +107,11 @@ class SongsHandler {
     }
   }
 
-  putSongByIdHandler(request, h) {
+  async putSongByIdHandler(request, h) {
     try {
-      this._validator.validateNotePayload(request.payload);
+      this._validator.validateSongPayload(request.payload);
       const { id } = request.params;
-      this._service.editSongById(id, request.payload);
+      await this._service.editSongById(id, request.payload);
 
       return {
         status: 'success',
@@ -138,10 +138,10 @@ class SongsHandler {
     }
   }
 
-  deleteSongByIdHandler(request, h) {
+  async deleteSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      this._service.deleteSongById(id);
+      await this._service.deleteSongById(id);
       return {
         status: 'success',
         message: 'Lagu berhasil dihapus',
