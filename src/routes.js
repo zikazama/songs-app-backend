@@ -1,38 +1,38 @@
 /*  eslint linebreak-style: ["error", "windows"]  */
 
 const {
-  addBookHandler,
-  getAllBooksHandler,
-  getBookByIdHandler,
-  editBookByIdHandler,
-  deleteBookByIdHandler,
+  addSongHandler,
+  getAllSongsHandler,
+  getSongByIdHandler,
+  editSongByIdHandler,
+  deleteSongByIdHandler,
 } = require('./handler');
 
 const routes = [
   {
     method: 'POST',
-    path: '/books',
-    handler: addBookHandler,
+    path: '/Songs',
+    handler: addSongHandler,
   },
   {
     method: 'GET',
-    path: '/books',
-    handler: getAllBooksHandler,
+    path: '/Songs',
+    handler: getAllSongsHandler,
   },
   {
     method: 'GET',
-    path: '/books/{id}',
-    handler: getBookByIdHandler,
+    path: '/Songs/{id}',
+    handler: getSongByIdHandler,
   },
   {
     method: 'PUT',
-    path: '/books/{id}',
-    handler: editBookByIdHandler,
+    path: '/Songs/{id}',
+    handler: editSongByIdHandler,
   },
   {
     method: 'DELETE',
-    path: '/books/{id}',
-    handler: deleteBookByIdHandler,
+    path: '/Songs/{id}',
+    handler: deleteSongByIdHandler,
   },
 ];
 

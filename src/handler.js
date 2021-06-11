@@ -2,68 +2,61 @@
 /*  eslint no-unneeded-ternary: "error" */
 
 const { nanoid } = require('nanoid');
-const books = require('./books');
+const songs = require('./songs');
 
-const addBookHandler = (request, h) => {
+const addSongHandler = (request, h) => {
   const {
-    name,
+    title,
     year,
-    author,
-    summary,
-    publisher,
-    pageCount,
-    readPage,
-    reading,
+    performer,
+    genre,
+    duration,
   } = request.payload;
 
-  if (readPage > pageCount) {
-    const response = h.response({
-      status: 'fail',
-      message:
-        'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
-    });
-    response.code(400);
-    return response;
-  }
-  if (name === undefined) {
-    const response = h.response({
-      status: 'fail',
-      message: 'Gagal menambahkan buku. Mohon isi nama buku',
-    });
-    response.code(400);
-    return response;
-  }
+  // if (readPage > pageCount) {
+  //   const response = h.response({
+  //     status: 'fail',
+  //     message:
+  //       'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+  //   });
+  //   response.code(400);
+  //   return response;
+  // }
+  // if (name === undefined) {
+  //   const response = h.response({
+  //     status: 'fail',
+  //     message: 'Gagal menambahkan buku. Mohon isi nama buku',
+  //   });
+  //   response.code(400);
+  //   return response;
+  // }
 
   const id = nanoid(16);
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
   const finished = pageCount === readPage;
 
-  const newBook = {
-    name,
+  const newSong = {
+    title,
     year,
-    author,
-    summary,
-    publisher,
-    pageCount,
-    readPage,
-    finished,
-    reading,
+    performer,
+    genre,
+    duration,
     id,
     insertedAt,
     updatedAt,
   };
 
-  books.push(newBook);
+  songs.push(newSong);
 
-  const isSuccess = books.filter((book) => book.id === id).length > 0;
+  const isSuccess = songs.filter((Song) => Song.id === id).length > 0;
 
   if (isSuccess) {
     const response = h.response({
       status: 'success',
-      message: 'Buku berhasil ditambahkan',
+      message: 'Lagu berhasil ditambahkan',
       data: {
-        bookId: id,
+        SongId: id,
       },
     });
     response.code(201);
@@ -71,48 +64,53 @@ const addBookHandler = (request, h) => {
   }
   const response = h.response({
     status: 'fail',
-    message: 'Buku gagal ditambahkan',
+    message: 'Lagu gagal ditambahkan',
   });
   response.code(500);
   return response;
 };
 
-const getAllBooksHandler = (request, h) => {
+const getAllSongsHandler = (request, h) => {
   const { name, reading, finished } = request.query;
 
-  let booksGet = books;
+  let songsGet = songs;
+  songsGet = songsGet.foreach((song) => {
+    song.id,
+    song.title,
+    song.performer
+  });
 
-  if (name !== undefined) {
-    booksGet = booksGet.filter((book) => book.name.toLowerCase().includes(name.toLowerCase()));
-    const response = h.response({
-      status: 'success',
-      data: {
-        books: booksGet,
-      },
-      query: request.query,
-    });
-    response.code(200);
-    return response;
-  }
-  if (reading !== undefined) {
-    let boolReading = true;
-    if (reading === '0') {
-      boolReading = false;
-    }
-    booksGet = booksGet.filter((book) => book.reading === boolReading);
-  }
-  if (finished !== undefined) {
-    let boolFinished = true;
-    if (finished === '0') {
-      boolFinished = false;
-    }
-    booksGet = booksGet.filter((book) => book.finished === boolFinished);
-  }
+  // if (name !== undefined) {
+  //   songsGet = songsGet.filter((Song) => Song.name.toLowerCase().includes(name.toLowerCase()));
+  //   const response = h.response({
+  //     status: 'success',
+  //     data: {
+  //       songs: songsGet,
+  //     },
+  //     query: request.query,
+  //   });
+  //   response.code(200);
+  //   return response;
+  // }
+  // if (reading !== undefined) {
+  //   let boolReading = true;
+  //   if (reading === '0') {
+  //     boolReading = false;
+  //   }
+  //   songsGet = songsGet.filter((Song) => Song.reading === boolReading);
+  // }
+  // if (finished !== undefined) {
+  //   let boolFinished = true;
+  //   if (finished === '0') {
+  //     boolFinished = false;
+  //   }
+  //   songsGet = songsGet.filter((Song) => Song.finished === boolFinished);
+  // }
 
   const response = h.response({
     status: 'success',
     data: {
-      books: booksGet,
+      songs: songsGet,
     },
     query: request.query,
   });
@@ -120,16 +118,16 @@ const getAllBooksHandler = (request, h) => {
   return response;
 };
 
-const getBookByIdHandler = (request, h) => {
+const getSongByIdHandler = (request, h) => {
   const { id } = request.params;
 
-  const book = books.filter((n) => n.id === id)[0];
+  const Song = songs.filter((n) => n.id === id)[0];
 
-  if (book !== undefined) {
+  if (Song !== undefined) {
     const response = h.response({
       status: 'success',
       data: {
-        book,
+        Song,
       },
     });
     response.code(200);
@@ -138,68 +136,60 @@ const getBookByIdHandler = (request, h) => {
 
   const response = h.response({
     status: 'fail',
-    message: 'Buku tidak ditemukan',
+    message: 'Lagu tidak ditemukan',
   });
   response.code(404);
   return response;
 };
 
-const editBookByIdHandler = (request, h) => {
+const editSongByIdHandler = (request, h) => {
   const { id } = request.params;
 
   const {
-    name,
+    title,
     year,
-    author,
-    summary,
-    publisher,
-    pageCount,
-    readPage,
-    reading,
+    performer,
+    genre,
+    duration,
   } = request.payload;
 
-  if (readPage > pageCount) {
-    const response = h.response({
-      status: 'fail',
-      message:
-        'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
-    });
-    response.code(400);
-    return response;
-  }
+  // if (readPage > pageCount) {
+  //   const response = h.response({
+  //     status: 'fail',
+  //     message:
+  //       'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+  //   });
+  //   response.code(400);
+  //   return response;
+  // }
 
-  if (name === undefined) {
-    const response = h.response({
-      status: 'fail',
-      message: 'Gagal memperbarui buku. Mohon isi nama buku',
-    });
-    response.code(400);
-    return response;
-  }
+  // if (name === undefined) {
+  //   const response = h.response({
+  //     status: 'fail',
+  //     message: 'Gagal memperbarui buku. Mohon isi nama buku',
+  //   });
+  //   response.code(400);
+  //   return response;
+  // }
 
   const updatedAt = new Date().toISOString();
-  const finished = pageCount === readPage;
 
-  const index = books.findIndex((book) => book.id === id);
+  const index = songs.findIndex((Song) => Song.id === id);
 
   if (index !== -1) {
-    books[index] = {
-      ...books[index],
-      name,
+    songs[index] = {
+      ...songs[index],
+      title,
       year,
-      author,
-      summary,
-      publisher,
-      pageCount,
-      readPage,
-      finished,
-      reading,
+      performer,
+      genre,
+      duration,
       updatedAt,
     };
 
     const response = h.response({
       status: 'success',
-      message: 'Buku berhasil diperbarui',
+      message: 'Lagu berhasil diperbarui',
     });
     response.code(200);
     return response;
@@ -207,22 +197,22 @@ const editBookByIdHandler = (request, h) => {
 
   const response = h.response({
     status: 'fail',
-    message: 'Gagal memperbarui catatan. Id tidak ditemukan',
+    message: 'Gagal memperbarui lagu. Id tidak ditemukan',
   });
   response.code(404);
   return response;
 };
 
-const deleteBookByIdHandler = (request, h) => {
+const deleteSongByIdHandler = (request, h) => {
   const { id } = request.params;
 
-  const index = books.findIndex((book) => book.id === id);
+  const index = songs.findIndex((Song) => Song.id === id);
 
   if (index !== -1) {
-    books.splice(index, 1);
+    songs.splice(index, 1);
     const response = h.response({
       status: 'success',
-      message: 'Buku berhasil dihapus',
+      message: 'Lagu berhasil dihapus',
     });
     response.code(200);
     return response;
@@ -230,16 +220,16 @@ const deleteBookByIdHandler = (request, h) => {
 
   const response = h.response({
     status: 'fail',
-    message: 'Buku gagal dihapus. Id tidak ditemukan',
+    message: 'Lagu gagal dihapus. Id tidak ditemukan',
   });
   response.code(404);
   return response;
 };
 
 module.exports = {
-  addBookHandler,
-  getAllBooksHandler,
-  getBookByIdHandler,
-  editBookByIdHandler,
-  deleteBookByIdHandler,
+  addSongHandler,
+  getAllSongsHandler,
+  getSongByIdHandler,
+  editSongByIdHandler,
+  deleteSongByIdHandler,
 };

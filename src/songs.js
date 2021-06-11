@@ -1,5 +1,5 @@
 /*  eslint linebreak-style: ["error", "windows"]  */
 
-const books = [];
+const songs = [];
 
-module.exports = books;
+module.exports = songs;
