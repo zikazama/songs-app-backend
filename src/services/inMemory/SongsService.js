@@ -13,8 +13,8 @@ class SongsService {
 
   addSong({ title, year, performer, genre, duration }) {
     const id = nanoid(16);
-    const createdAt = new Date().toISOString();
-    const updatedAt = createdAt;
+    const insertedAt = new Date().toISOString();
+    const updatedAt = insertedAt;
 
     const newSong = {
       title,
@@ -23,7 +23,7 @@ class SongsService {
       genre,
       duration,
       id,
-      createdAt,
+      insertedAt,
       updatedAt,
     };
 
