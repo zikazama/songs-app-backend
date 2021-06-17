@@ -11,5 +11,15 @@
         "ecmaVersion": 12
     },
     "rules": {
+        "no-sequences": "off",
+        "semi": "off",
+        "no-unused-vars": "off",
+        "no-unused-expressions":"off",
+        "linebreak-style":"off",
+        "no-unneeded-ternary":"error",
+        "eol-last":"off",
+        "no-underscore-dangle":"off",
+        "no-console":"off",
+        "quotes":"off"
     }
 }

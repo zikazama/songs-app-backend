@@ -1,10 +1,3 @@
-/* eslint-disable no-sequences */
-/* eslint-disable semi */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-unused-expressions */
-/*  eslint linebreak-style: ["error", "windows"]  */
-/*  eslint no-unneeded-ternary: "error" */
-
 const { nanoid } = require('nanoid');
 const songs = require('./songs');
 
@@ -16,24 +9,6 @@ const addSongHandler = (request, h) => {
     genre,
     duration,
   } = request.payload;
-
-  // if (readPage > pageCount) {
-  //   const response = h.response({
-  //     status: 'fail',
-  //     message:
-  //       'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
-  //   });
-  //   response.code(400);
-  //   return response;
-  // }
-  // if (name === undefined) {
-  //   const response = h.response({
-  //     status: 'fail',
-  //     message: 'Gagal menambahkan buku. Mohon isi nama buku',
-  //   });
-  //   response.code(400);
-  //   return response;
-  // }
 
   const id = nanoid(16);
   const insertedAt = new Date().toISOString();
