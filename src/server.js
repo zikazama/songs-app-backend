@@ -20,8 +20,26 @@ const AuthenticationsService = require("./services/postgres/AuthenticationsServi
 const TokenManager = require("./tokenize/TokenManager");
 const AuthenticationsValidator = require("./validator/authentications");
 
+// collaborations
+const collaborations = require('./api/collaborations');
+const CollaborationsService = require('./services/postgres/CollaborationsService');
+const CollaborationsValidator = require('./validator/collaborations');
+
+// playlists
+const playlists = require("./api/playlists");
+const PlaylistsService = require("./services/postgres/PlaylistsService");
+const PlaylistsValidator = require("./validator/playlists");
+
+// playlistsSong
+const playlistsongs = require("./api/playlistsongs");
+const PlaylistSongsService = require("./services/postgres/PlaylistSongsService");
+const PlaylistSongsValidator = require("./validator/playlistsongs");
+
 const init = async () => {
+  const collaborationsService = new CollaborationsService();
   const songsService = new SongsService();
+  const playlistsService = new PlaylistsService(collaborationsService);
+  const playlistSongsService = new PlaylistSongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
 
@@ -83,6 +101,28 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: collaborations,
+      options: {
+        collaborationsService,
+        playlistsService,
+        validator: CollaborationsValidator,
+      },
+    },
+    {
+      plugin: playlists,
+      options: {
+        service: playlistsService,
+        validator: PlaylistsValidator,
+      },
+    },
+    {
+      plugin: playlistsongs,
+      options: {
+        service: playlistSongsService,
+        validator: PlaylistSongsValidator,
       },
     },
   ]);
