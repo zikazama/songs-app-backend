@@ -27,7 +27,6 @@ class SongsHandler {
         genre,
         duration,
       } = request.payload;
-      const { id: credentialId } = request.auth.credentials;
 
       const songId = await this._service.addSong({
         title,
@@ -35,7 +34,6 @@ class SongsHandler {
         performer,
         genre,
         duration,
-        owner: credentialId,
       });
 
       const response = h.response({
@@ -69,8 +67,7 @@ class SongsHandler {
   }
 
   async getSongsHandler(request) {
-    const { id: credentialId } = request.auth.credentials;
-    const songs = await this._service.getSongs(credentialId);
+    const songs = await this._service.getSongs();
     return {
       status: 'success',
       data: {
