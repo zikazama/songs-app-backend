@@ -36,7 +36,7 @@ class PlaylistsService {
 
   async getPlaylists(owner) {
     const result = await this._pool.query({
-      text: "SELECT id, name, owner as username FROM playlists WHERE owner = $1",
+      text: "SELECT p.id, p.name, u.username FROM playlists p JOIN users u ON p.owner = u.id WHERE p.owner = $1",
       values: [owner],
     });
     return result.rows.map(mapPlaylistToModel);
@@ -44,7 +44,7 @@ class PlaylistsService {
 
   async getPlaylistById(id) {
     const query = {
-      text: "SELECT id, name, owner as username FROM playlists WHERE id = $1",
+      text: "SELECT p.id, p.name, u.username FROM playlists p JOIN users u ON p.owner = u.id  WHERE p.id = $1",
       values: [id],
     };
     const result = await this._pool.query(query);

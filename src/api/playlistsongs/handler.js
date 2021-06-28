@@ -61,14 +61,14 @@ class PlaylistSongsHandler {
     try {
       const { playlistId } = request.params;
       const { id: credentialId } = request.auth.credentials;
-      const playlistsongs = await this._service.getPlaylistSongs({
+      const songs = await this._service.getPlaylistSongs({
         playlistId,
         credentialId,
       });
       return {
         status: "success",
         data: {
-          playlistsongs,
+          songs,
         },
       };
     } catch (error) {
