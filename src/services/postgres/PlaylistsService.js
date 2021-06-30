@@ -11,18 +11,12 @@ class PlaylistsService {
     this._collaborationService = collaborationService;
   }
 
-  async addPlaylist({
-    name, owner,
-  }) {
+  async addPlaylist({ name, owner }) {
     const id = nanoid(16);
 
     const query = {
       text: "INSERT INTO playlists VALUES($1, $2, $3) RETURNING id",
-      values: [
-        id,
-        name,
-        owner,
-      ],
+      values: [id, name, owner],
     };
 
     const result = await this._pool.query(query);
@@ -36,7 +30,25 @@ class PlaylistsService {
 
   async getPlaylists(owner) {
     const result = await this._pool.query({
-      text: "SELECT p.id, p.name, u.username FROM playlists p JOIN users u ON p.owner = u.id WHERE p.owner = $1",
+      text: `
+      (SELECT P
+    .ID,
+    P.NAME,
+    u.username 
+  FROM
+    playlists
+    P JOIN users u ON P.OWNER = u.ID
+    WHERE p.owner = $1)
+    UNION
+  (SELECT P
+    .ID,
+    P.NAME,
+    u.username 
+  FROM
+    playlists
+    P JOIN collaborations C ON C.playlist_id = P.
+    ID JOIN users u ON p.owner = u.ID
+      WHERE c.user_id = $1)`,
       values: [owner],
     });
     return result.rows.map(mapPlaylistToModel);
@@ -56,11 +68,9 @@ class PlaylistsService {
     return result.rows.map(mapPlaylistToModel)[0];
   }
 
-  async editPlaylistById(id, {
-    name,
-  }) {
+  async editPlaylistById(id, { name }) {
     const query = {
-      text: 'UPDATE playlists SET name = $1 WHERE id = $2 RETURNING id',
+      text: "UPDATE playlists SET name = $1 WHERE id = $2 RETURNING id",
       values: [name, id],
     };
 
