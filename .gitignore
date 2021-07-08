@@ -1,1 +1,5 @@
 node_modules
+songs-api-web-server.pem
+.env
+.prod.env
+src/api/uploads/file

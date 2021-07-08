@@ -2,6 +2,8 @@
 require("dotenv").config();
 const Hapi = require("@hapi/hapi");
 const Jwt = require("@hapi/jwt");
+const Inert = require('@hapi/inert');
+const path = require("path");
 const routes = require("./routes");
 
 // songs
@@ -21,14 +23,19 @@ const TokenManager = require("./tokenize/TokenManager");
 const AuthenticationsValidator = require("./validator/authentications");
 
 // collaborations
-const collaborations = require('./api/collaborations');
-const CollaborationsService = require('./services/postgres/CollaborationsService');
-const CollaborationsValidator = require('./validator/collaborations');
+const collaborations = require("./api/collaborations");
+const CollaborationsService = require("./services/postgres/CollaborationsService");
+const CollaborationsValidator = require("./validator/collaborations");
 
 // Exports
-const _exports = require('./api/exports');
-const ProducerService = require('./services/rabbitmq/ProducerService');
-const ExportsValidator = require('./validator/exports');
+const _exports = require("./api/exports");
+const ProducerService = require("./services/rabbitmq/ProducerService");
+const ExportsValidator = require("./validator/exports");
+
+// uploads
+const uploads = require("./api/uploads");
+const StorageService = require("./services/storage/StorageService");
+const UploadsValidator = require("./validator/uploads");
 
 // playlists
 const playlists = require("./api/playlists");
@@ -47,6 +54,9 @@ const init = async () => {
   const playlistSongsService = new PlaylistSongsService(collaborationsService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const storageService = new StorageService(
+    path.resolve(__dirname, "api/uploads/file/images"),
+  );
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -59,16 +69,26 @@ const init = async () => {
   });
 
   server.route(routes);
+  server.route({
+    method: "GET",
+    path: "/picture.jpg",
+    handler: {
+      file: "picture.jpg",
+    },
+  });
 
   // registrasi plugin eksternal
   await server.register([
     {
       plugin: Jwt,
     },
+    {
+      plugin: Inert,
+    },
   ]);
 
   // mendefinisikan strategy autentikasi jwt
-  server.auth.strategy('songsapp_jwt', 'jwt', {
+  server.auth.strategy("songsapp_jwt", "jwt", {
     keys: process.env.ACCESS_TOKEN_KEY,
     verify: {
       aud: false,
@@ -135,6 +155,13 @@ const init = async () => {
       options: {
         service: ProducerService,
         validator: ExportsValidator,
+      },
+    },
+    {
+      plugin: uploads,
+      options: {
+        service: storageService,
+        validator: UploadsValidator,
       },
     },
   ]);
