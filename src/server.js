@@ -37,6 +37,9 @@ const uploads = require("./api/uploads");
 const StorageService = require("./services/storage/StorageService");
 const UploadsValidator = require("./validator/uploads");
 
+// cache
+const CacheService = require('./services/redis/CacheService');
+
 // playlists
 const playlists = require("./api/playlists");
 const PlaylistsService = require("./services/postgres/PlaylistsService");
@@ -48,8 +51,9 @@ const PlaylistSongsService = require("./services/postgres/PlaylistSongsService")
 const PlaylistSongsValidator = require("./validator/playlistsongs");
 
 const init = async () => {
-  const collaborationsService = new CollaborationsService();
-  const songsService = new SongsService();
+  const cacheService = new CacheService();
+  const collaborationsService = new CollaborationsService(cacheService);
+  const songsService = new SongsService(collaborationsService,cacheService);
   const playlistsService = new PlaylistsService(collaborationsService);
   const playlistSongsService = new PlaylistSongsService(collaborationsService);
   const usersService = new UsersService();
