@@ -5,14 +5,12 @@ const NotFoundError = require("../../exceptions/NotFoundError");
 const { mapDBToModel } = require("../../utils");
 
 class SongsService {
-  constructor(collaborationService, cacheService) {
+  constructor() {
     this._pool = new Pool();
-    this._collaborationService = collaborationService;
-    this._cacheService = cacheService;
   }
 
   async addSong({
-    title, year, performer, genre, duration, owner,
+    title, year, performer, genre, duration,
   }) {
     const id = nanoid(16);
     const insertedAt = new Date().toISOString();
@@ -38,35 +36,15 @@ class SongsService {
       throw new InvariantError("Lagu gagal ditambahkan");
     }
 
-    await this._cacheService.delete(`notes:${owner}`);
     return result.rows[0].id;
   }
 
-  async getSongs(owner) {
-    try {
-      // mendapatkan catatan dari cache
-      const result = await this._cacheService.get(`songs:${owner}`);
-      return JSON.parse(result);
-    } catch (e) {
-      const query = {
-        text: `SELECT songs.* FROM songs
-        LEFT JOIN collaborations ON collaborations.song_id = songs.id
-        WHERE songs.owner = $1 OR collaborations.user_id = $1
-        GROUP BY songs.id`,
-        values: [owner],
-      };
-
-      const result = await this._pool.query(query);
-      const mappedResult = result.rows.map(mapDBToModel);
-
-      // catatan akan disimpan pada cache sebelum fungsi getNotes dikembalikan
-      await this._cacheService.set(
-        `songs:${owner}`,
-        JSON.stringify(mappedResult),
-      );
-
-      return mappedResult;
-    }
+  async getSongs() {
+    const result = await this._pool.query({
+      text: "SELECT id, title, performer FROM songs",
+      values: [],
+    });
+    return result.rows.map(mapDBToModel);
   }
 
   async getSongById(id) {
@@ -84,7 +62,7 @@ class SongsService {
   }
 
   async editSongById(id, {
-    title, year, performer, genre, duration, owner,
+    title, year, performer, genre, duration,
   }) {
     const updatedAt = new Date().toISOString();
     const query = {
@@ -97,9 +75,6 @@ class SongsService {
     if (!result.rows.length) {
       throw new NotFoundError("Gagal memperbarui lagu. Id tidak ditemukan");
     }
-
-    const { owner } = result.rows[0];
-    await this._cacheService.delete(`notes:${owner}`);
   }
 
   async deleteSongById(id) {

@@ -53,8 +53,8 @@ const PlaylistSongsValidator = require("./validator/playlistsongs");
 const init = async () => {
   const cacheService = new CacheService();
   const collaborationsService = new CollaborationsService(cacheService);
-  const songsService = new SongsService(collaborationsService,cacheService);
-  const playlistsService = new PlaylistsService(collaborationsService);
+  const songsService = new SongsService();
+  const playlistsService = new PlaylistsService(collaborationsService,cacheService);
   const playlistSongsService = new PlaylistSongsService(collaborationsService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
@@ -73,13 +73,13 @@ const init = async () => {
   });
 
   server.route(routes);
-  server.route({
-    method: "GET",
-    path: "/picture.jpg",
-    handler: {
-      file: "picture.jpg",
-    },
-  });
+  // server.route({
+  //   method: "GET",
+  //   path: "/picture.jpg",
+  //   handler: {
+  //     file: "picture.jpg",
+  //   },
+  // });
 
   // registrasi plugin eksternal
   await server.register([

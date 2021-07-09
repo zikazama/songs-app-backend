@@ -5,19 +5,19 @@ class ExportsHandler {
     this._service = service;
     this._validator = validator;
 
-    this.postExportSongsHandler = this.postExportSongsHandler.bind(this);
+    this.postExportPlaylistsHandler = this.postExportPlaylistsHandler.bind(this);
   }
 
-  async postExportSongsHandler(request, h) {
+  async postExportPlaylistsHandler(request, h) {
     try {
-      this._validator.validateExportSongsPayload(request.payload);
+      this._validator.validateExportPlaylistsPayload(request.payload);
 
       const message = {
         userId: request.auth.credentials.id,
         targetEmail: request.payload.targetEmail,
       };
 
-      await this._service.sendMessage("export:songs", JSON.stringify(message));
+      await this._service.sendMessage("export:playlists", JSON.stringify(message));
 
       const response = h.response({
         status: "success",

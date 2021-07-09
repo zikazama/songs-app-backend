@@ -34,6 +34,13 @@ const routes = [
     path: '/Songs/{id}',
     handler: deleteSongByIdHandler,
   },
+  // {
+  //   method: "GET",
+  //   path: "/picture.jpg",
+  //   handler: {
+  //     file: "picture.jpg",
+  //   },
+  // }
 ];
 
 module.exports = routes;
