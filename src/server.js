@@ -54,7 +54,7 @@ const init = async () => {
   const cacheService = new CacheService();
   const collaborationsService = new CollaborationsService(cacheService);
   const songsService = new SongsService();
-  const playlistsService = new PlaylistsService(collaborationsService,cacheService);
+  const playlistsService = new PlaylistsService(collaborationsService, cacheService);
   const playlistSongsService = new PlaylistSongsService(collaborationsService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
@@ -159,6 +159,7 @@ const init = async () => {
       options: {
         service: ProducerService,
         validator: ExportsValidator,
+        playlistsService,
       },
     },
     {

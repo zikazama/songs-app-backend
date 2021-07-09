@@ -11,17 +11,28 @@ class UploadsHandler {
   async postUploadImageHandler(request, h) {
     try {
       const { data } = request.payload;
-      this._validator.validateImageHeaders(data.hapi.headers);
 
-      const filename = await this._service.writeFile(data, data.hapi);
+      const size = Buffer.byteLength(data._data);
+      let response = {};
 
-      const response = h.response({
-        status: "success",
-        data: {
-          pictureUrl: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`,
-        },
-      });
-      response.code(201);
+      if (size < 864549) {
+        this._validator.validateImageHeaders(data.hapi.headers);
+
+        const filename = await this._service.writeFile(data, data.hapi);
+
+        response = h.response({
+          status: "success",
+          data: {
+            pictureUrl: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`,
+          },
+        });
+        response.code(201);
+      } else {
+        response = h.response({
+          status: "fail",
+        });
+        response.code(413);
+      }
       return response;
     } catch (error) {
       if (error instanceof ClientError) {
